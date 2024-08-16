@@ -7,15 +7,16 @@ resources:
 variables:
 
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '2ab4f159-c1a5-418d-84c4-9a3536f78cff'
+  dockerRegistryServiceConnection: '3bcbb23c-6fca-4ff0-8719-bfbdb64a89b1'
   imageRepository: 'productservice'
-  containerRegistry: 'acseshop468748905.azurecr.io'
+  containerRegistry: 'acseshop186748394.azurecr.io'
   dockerfilePath: 'DockerfileProducts.acr'
   tag: '$(Build.BuildId)'
-  imagePullSecret: 'acseshop4687489059123-auth'
+  imagePullSecret: 'acseshop18674839414442d34-auth'
 
-  # Agent name
-  selfHostedAgentName: 'LAPTOP-6NHIG1K8'
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
 
 stages:
 - stage: Build
@@ -24,9 +25,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      name: 'Default'   # Default or the name of your agent pool
-      demands:
-        - agent.name -equals $(selfHostedAgentName)
+      vmImage: $(vmImageName)
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
@@ -49,10 +48,8 @@ stages:
   - deployment: Deploy
     displayName: Deploy
     pool:
-      name: 'Default'  # Default or the name of your agent pool
-      demands:
-        - agent.name -equals $(selfHostedAgentName)
-    environment: 'Esmatt123mslearndotnetcloudnativedevops.default'
+      vmImage: $(vmImageName)
+    environment: 'PhilStollerymod9cloudnativeexercisecode-1959.default'
     strategy:
       runOnce:
         deploy:

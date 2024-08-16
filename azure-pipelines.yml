@@ -1,7 +1,3 @@
-# Deploy to Azure Kubernetes Service
-# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
-
 trigger:
 - main
 
@@ -26,13 +22,30 @@ stages:
 - stage: Build
   displayName: Build stage
   jobs:
-  - job: Build
-    displayName: Build
+  - job: BuildOnHostedAgent
+    displayName: Build on Microsoft-hosted agent
     pool:
-      vmImage: $(vmImageName)
+      vmImage: $(vmImageName)  # Microsoft-hosted agent
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+
+  - job: BuildOnSelfHostedAgent
+    displayName: Build on self-hosted agent
+    pool:
+      name: 'Default'  # Name of the self-hosted agent pool
+      demands:
+        - agent.name -equals LAPTOP-6NHIG1K8  # Ensure it targets your self-hosted agent
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry (Self-hosted)
       inputs:
         command: buildAndPush
         repository: $(imageRepository)
@@ -52,7 +65,7 @@ stages:
   - deployment: Deploy
     displayName: Deploy
     pool:
-      vmImage: $(vmImageName)
+      vmImage: $(vmImageName)  # Microsoft-hosted agent
     environment: 'Esmatt123mslearndotnetcloudnativedevops-7881.default'
     strategy:
       runOnce:
@@ -76,4 +89,3 @@ stages:
                 $(imagePullSecret)
               containers: |
                 $(containerRegistry)/$(imageRepository):$(tag)
-

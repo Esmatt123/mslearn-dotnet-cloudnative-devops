@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: esmattmslearndotnetcloudnativedevops 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: esmattmslearndotnetcloudnativedevops
+  template:
+    metadata:
+      labels:
+        app: esmattmslearndotnetcloudnativedevops 
+    spec:
+      containers:
+        - name: esmattmslearndotnetcloudnativedevops 
+          image: acseshop468748905.azurecr.io/esmattmslearndotnetcloudnativedevops
+          ports:
+          - containerPort: 8080
